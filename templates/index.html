@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>EdgeVend - MVP Profissional</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <header>
+      <h1>🥤 EdgeVend</h1>
+      <span class="subtitle">MAQ-BELEM-001 | Tópicos Avançados - UNAMA</span>
+    </header>
+
+    <div class="status-bar">
+      <span id="statusBadge" class="badge offline">● OFFLINE - Edge Ativo</span>
+      <span id="lat" class="latency">--ms</span>
+    </div>
+
+    <div class="form-group">
+      <label>ID do Cliente (LGPD - Anônimo)</label>
+      <input id="cliente" value="04144774" placeholder="Ex: 04144774">
+    </div>
+
+    <label class="checkbox"><input type="checkbox" id="onlineChk"> Simular conexão Online</label>
+
+    <button class="primary" onclick="buscar()">Ver Recomendações Personalizadas</button>
+
+    <div id="result"></div>
+
+    <footer>
+      <p><strong>Arquitetura:</strong> Cliente → Edge Node (Raspberry Pi) → Nuvem (Sync)</p>
+      <p><strong>Modelo:</strong> 4.2KB | <strong>Banco:</strong> SQLite Offline-First | <strong>Protocolo:</strong> MQTT Simulado</p>
+    </footer>
+  </div>
+
+  <div class="card info">
+    <h3>Para o Artigo</h3>
+    <ul>
+      <li><b>Problema:</b> Recomendação falha sem internet</li>
+      <li><b>Solução Edge:</b> Inferência 100% local < 100ms</li>
+      <li><b>LGPD:</b> Apenas ID anônimo</li>
+      <li><b>Referências:</b> SHI 2016 (latência -70%), SANGPAL 2022 (Raspberry Pi)</li>
+    </ul>
+    <p class="small">Este MVP prova a lacuna do benchmarking: nenhum trabalho anterior une offline + baixo custo + LGPD.</p>
+  </div>
+</div>
+
+<script>
+async function buscar(){
+  const cliente_id = document.getElementById('cliente').value;
+  const online = document.getElementById('onlineChk').checked;
+  const badge = document.getElementById('statusBadge');
+  badge.className = online ? 'badge online' : 'badge offline';
+  badge.innerText = online ? '● ONLINE - Sincronizando' : '● OFFLINE - Edge Ativo';
+
+  const r = await fetch('/api/recomendar',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({cliente_id, online})});
+  const data = await r.json();
+  document.getElementById('lat').innerText = data.latencia_ms + 'ms';
+
+  let html = `<div class="meta"><p>Cliente <b>${data.cliente_id}</b> | Histórico: ${data.historico_qtd} compras</p><p class="status-text">${data.status}</p></div>`;
+  data.recomendacoes.forEach(rec=>{
+    html += `<div class="rec"><div><b>${rec.nome}</b><span>${rec.categoria} - R$ ${rec.preco}</span></div><button onclick="comprar(${rec.id})">Comprar</button></div>`;
+  });
+  html += `<div class="tech"><small>Node: ${data.edge_node}<br>Modelo: ${data.modelo_size}</small></div>`;
+  document.getElementById('result').innerHTML = html;
+}
+async function comprar(pid){
+  const cliente_id = document.getElementById('cliente').value;
+  await fetch('/api/comprar',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({cliente_id, produto_id: pid})});
+  alert('Compra registrada OFFLINE no SQLite!');
+  buscar();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Ambiente virtual
+.venv/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyc
+*.pyo
+
+# Banco de dados - NAO subir pro GitHub (LGPD + dado local da maquina)
+database.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Flask
+instance/
+.webassets-cache
+
+# Logs
+*.log
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VSCode / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos temporarios do MVP antigo
+App-Final.py
+App.py
