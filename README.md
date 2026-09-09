@@ -1,7 +1,6 @@
 # EdgeVend - Sistema de Recomendação para Máquinas de Venda com Edge Computing
 
-> **Disciplina:** Tópicos Avançados (UNAMA - Belém)  
-> **Aluno:** 04144774 - Léo Davis  
+> **Disciplina:** Tópicos Avançados (UNAMA - Belém)
 > **Máquina Piloto:** MAQ-BELEM-001  
 > **Ano:** 2026
 
