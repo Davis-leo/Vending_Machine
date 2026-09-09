@@ -1,14 +1,18 @@
 import sqlite3, os, random, datetime
 
-DB = "database.db"
+DB = "database.db"  # SQLite arquivo único - viabiliza operação 100% offline sem servidor
 
 def init_db():
+    # RNF03 - Confiabilidade: só cria se não existir, evita perda de histórico local (Store-and-Forward)
     if os.path.exists(DB):
         return
     conn = sqlite3.connect(DB)
     cur = conn.cursor()
+    # Tabela de catálogo local - 12 produtos fixos da MAQ-BELEM-001
     cur.execute("CREATE TABLE produtos (id INTEGER PRIMARY KEY, nome TEXT, categoria TEXT, preco REAL)")
+    # Tabela de log offline - guarda todas as vendas com maquina_id para sincronização futura via MQTT
     cur.execute("CREATE TABLE compras (id INTEGER PRIMARY KEY AUTOINCREMENT, cliente_id TEXT, produto_id INTEGER, horario TEXT, maquina_id TEXT)")
+    
     produtos = [
         (1, "Água 500ml", "Bebida", 3.0),
         (2, "Água com Gás", "Bebida", 3.5),
@@ -24,6 +28,9 @@ def init_db():
         (12, "Água de Coco", "Bebida", 7.0),
     ]
     cur.executemany("INSERT INTO produtos VALUES (?,?,?,?)", produtos)
+
+    # Simulação de 100 compras para teste do algoritmo de recomendação
+    # Perfil personalizado: 04144774 e leo compram mais Água com Gás, Café e Barra (prova conceito personalizado)
     for _ in range(100):
         cid = random.choice(["04144774", "leo", "2024001", "2024002"])
         pid = random.choice([2,4,7]) if cid in ["04144774","leo"] else random.choice([1,3,6,8,11])
