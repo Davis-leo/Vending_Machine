@@ -11,8 +11,7 @@ __pycache__/
 *.pyc
 *.pyo
 
-# Banco de dados - NAO subir pro GitHub (LGPD + dado local da maquina)
-database.db
+# Banco de dados - não subir para o GitHub
 *.db
 *.sqlite
 *.sqlite3
@@ -35,7 +34,3 @@ desktop.ini
 *.swp
 *.swo
 *~
-
-# Arquivos temporarios do MVP antigo
-App-Final.py
-App.py
